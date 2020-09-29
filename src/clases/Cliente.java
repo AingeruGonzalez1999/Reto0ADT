@@ -6,6 +6,7 @@
 package clases;
 
 import java.io.Serializable;
+import utilidades.Utilidades;
 
 /**
  *
@@ -23,7 +24,7 @@ public class Cliente implements Serializable {
     private String provincia;
     private String email;
     private int codigoPostal;
-    private int telefono;
+    private long telefono;
 
     // Constructor
     public Cliente() {
@@ -103,12 +104,35 @@ public class Cliente implements Serializable {
         this.codigoPostal = codigoPostal;
     }
 
-    public int getTelefono() {
+    public long getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(int telefono) {
+    public void setTelefono(long telefono) {
         this.telefono = telefono;
     }
 
+    public void setDatosCliente() {
+        System.out.println("Introduce nombre:");
+        nombre = Utilidades.introducirCadena();
+        System.out.println("Introduce apellido:");
+        apellido = Utilidades.introducirCadena();      
+        inicial = nombre.substring(0).toUpperCase().concat(".");
+        System.out.println("Introduce calle:");
+        calle = Utilidades.introducirCadena();
+        System.out.println("Introduce ciudad:");
+        ciudad = Utilidades.introducirCadena();
+        System.out.println("Introduce provincia:");
+        provincia = Utilidades.introducirCadena();
+        email = nombre.substring(0).concat(apellido).concat("@").concat("gmail.com");
+        System.out.println("Introduce código postal:");
+        codigoPostal = Utilidades.leerInt();
+        System.out.println("Introduce teléfono:");
+        telefono = Utilidades.leerInt();
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente{" + "idCliente=" + idCliente + ", nombre=" + nombre + ", apellido=" + apellido + ", inicial=" + inicial + ", calle=" + calle + ", ciudad=" + ciudad + ", provincia=" + provincia + ", email=" + email + ", codigoPostal=" + codigoPostal + ", telefono=" + telefono + '}';
+    }
 }

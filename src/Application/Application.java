@@ -1,7 +1,8 @@
 package Application;
 
+import clases.Cliente;
 import dao.Dao;
-import java.util.Scanner;
+import utilidades.Utilidades;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,6 +15,9 @@ import java.util.Scanner;
  * @author Aingeru
  */
 public class Application {
+
+    private static Dao dao = new Dao();
+    private static Cliente cliente = new Cliente();
 
     /**
      * @param args the command line arguments
@@ -61,56 +65,58 @@ public class Application {
 
     public static int obtenerOpcMenu() {
         int opc;
-        Scanner entrada = new Scanner(System.in);
-        
+
         System.out.println("B A N C O");
         System.out.println("**********************************************************");
         System.out.println("1. Crear cliente.");
         System.out.println("2. Consultar datos de un cliente.");
         System.out.println("3. Consultar cuentas de un cliente.");
         System.out.println("4. Crear cuenta para cliente.");
-        System.out.println("5. Agregar cliente a cuenta."); // Garikoitz Salgado
-        System.out.println("6. Consultar datos de una cuenta."); // Garikoitz Salgado
+        System.out.println("5. Agregar cliente a cuenta.");
+        System.out.println("6. Consultar datos de una cuenta.");
         System.out.println("7. Realizar movimiento sobre una cuenta.");
         System.out.println("8. Consultar movimientos de una cuenta.");
         System.out.println("9. S A L I R ");
         System.out.println("**********************************************************");
         System.out.println("Introduce opción: ");
-        opc = entrada.nextInt();
+        opc = Utilidades.leerInt(1, 9);
         return opc;
     }
 
     private static void crearCliente() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Cliente c = new Cliente();
+        c.setDatosCliente();
+        dao.setCustomer(c);
     }
 
     private static void consultarCliente() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Introuce cliente a consultar:");
+        String n = Utilidades.introducirCadena();
+        dao.getCustomers(n);
     }
 
     private static void consultarCuentaCliente() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private static void crearCuentaCliente() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private static void agregarClienteCuenta() { //yo
-        Dao dao = new Dao();
         
     }
 
-    private static void consultarDatosCuenta() { //yo
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static void crearCuentaCliente() {
+    
+    }
+
+    private static void agregarClienteCuenta() {
+
+    }
+
+    private static void consultarDatosCuenta() {
+    
     }
 
     private static void realizarMovimiento() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
     }
 
     private static void consultarMovimiento() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
     }
 
 }
