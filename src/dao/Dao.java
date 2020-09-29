@@ -43,7 +43,7 @@ public class Dao {
 
     private void closeConnection() throws SQLException {
 	stmt.close();
-		con.close();
+        con.close();
     }
 
 
