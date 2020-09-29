@@ -34,15 +34,16 @@ public class Dao {
     
     private void openConnection() throws Exception {
 	try{
-            
-        }cacth(){
-        
+            Class.forName(this.driverBD);
+            con=DriverManager.getConnection(urlBD, userBD, passwordBD);
+        }catch(SQLException e){
+            System.out.println("ERROR SQL");
         }
     }
 
     private void closeConnection() throws SQLException {
 	stmt.close();
-		con.close();
+        con.close();
     }
 
 

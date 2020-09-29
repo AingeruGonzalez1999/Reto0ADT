@@ -1,5 +1,6 @@
 package Application;
 
+import dao.Dao;
 import java.util.Scanner;
 
 /*
@@ -68,8 +69,8 @@ public class Application {
         System.out.println("2. Consultar datos de un cliente.");
         System.out.println("3. Consultar cuentas de un cliente.");
         System.out.println("4. Crear cuenta para cliente.");
-        System.out.println("5. Agregar cliente a cuenta.");
-        System.out.println("6. Consultar datos de una cuenta.");
+        System.out.println("5. Agregar cliente a cuenta."); // Garikoitz Salgado
+        System.out.println("6. Consultar datos de una cuenta."); // Garikoitz Salgado
         System.out.println("7. Realizar movimiento sobre una cuenta.");
         System.out.println("8. Consultar movimientos de una cuenta.");
         System.out.println("9. S A L I R ");
@@ -95,11 +96,12 @@ public class Application {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static void agregarClienteCuenta() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static void agregarClienteCuenta() { //yo
+        Dao dao = new Dao();
+        
     }
 
-    private static void consultarDatosCuenta() {
+    private static void consultarDatosCuenta() { //yo
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
