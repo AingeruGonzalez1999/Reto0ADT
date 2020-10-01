@@ -1,13 +1,12 @@
 package dao;
 
 import clases.Cliente;
+import clases.Cuenta;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,33 +22,56 @@ import java.util.logging.Logger;
  */
 public class Dao {
 
-    private Connection con;
-    private Statement stmt;
-    private ResourceBundle rb = ResourceBundle.getBundle("config.config");
-    private String setCustomer = "INSERT INTO customer (firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?)";
+    private Connection con = null;
+    private PreparedStatement stat = null;
+    private ResourceBundle configFile = null;
+    private String driverBD = "";
+    private String urlBD = "";
+    private String userBD = "";
+    private String passwordBD = "";
+
+    private final String setCustomer = "INSERT INTO customer (firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?)";
+    private final String getCustomers = "SELECT * FROM customer WHERE firstName LIKE ?";
+    private final String getCuentaCliente = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
+
+    public Dao() {
+        this.configFile = ResourceBundle.getBundle("config.config");
+        this.driverBD = this.configFile.getString("Driver");
+        this.urlBD = this.configFile.getString("Conn");
+        this.userBD = this.configFile.getString("DBUser");
+        this.passwordBD = this.configFile.getString("DBPass");
+    }
 
     private void openConnection() {
         try {
-            Class.forName(rb.getString("Driver"));
-            Properties connectionProps = new Properties();
-            connectionProps.put("user", rb.getString("DBUser"));
-            connectionProps.put("password", rb.getString("DBPass"));
-            this.con = DriverManager.getConnection(rb.getString("Conn"), connectionProps);
-        } catch (SQLException ex) {
-            Logger.getLogger(Dao.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Dao.class.getName()).log(Level.SEVERE, null, ex);
+            Class.forName(this.driverBD);
+            con = DriverManager.getConnection(this.urlBD, this.userBD, this.passwordBD);
+        } catch (SQLException e) {
+            Logger.getLogger(Dao.class.getName()).log(Level.SEVERE, null, e);
+        } catch (ClassNotFoundException e1) {
+            Logger.getLogger(Dao.class.getName()).log(Level.SEVERE, null, e1);
         }
     }
 
-    private void closeConnection() throws SQLException {
-        con.close();
+    private void closeConnection() {
+        try {
+            if (stat != null) {
+                stat.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR CERRANDO CONEXION");
+        }
     }
 
     public Cliente setCustomer(Cliente c) {
+
+        this.openConnection();
+
         try {
 
-            this.openConnection();
             PreparedStatement ps = con.prepareStatement(setCustomer);
             ps.setString(1, c.getNombre());
             ps.setString(2, c.getApellido());
@@ -60,24 +82,31 @@ public class Dao {
             ps.setString(7, c.getEmail());
             ps.setInt(8, c.getCodigoPostal());
             ps.setLong(9, c.getTelefono());
+
             ps.execute();
             ps.close();
-            this.closeConnection();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        this.closeConnection();
+
         return c;
     }
 
     public Cliente getCustomers(String n) {
-        Cliente c = null;
-        try {
-            this.openConnection();
 
-            String getCustomers = "SELECT * FROM customer WHERE firstName LIKE '" + n + "'";
-            stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(getCustomers);
+        Cliente c = null;
+
+        this.openConnection();
+
+        try {
+
+            PreparedStatement ps = con.prepareStatement(getCustomers);
+            ps.setString(1, n);
+            ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 c = new Cliente();
                 c.setNombre(rs.getString("firstName"));
@@ -91,12 +120,54 @@ public class Dao {
                 c.setTelefono(rs.getLong("phone"));
                 System.out.println(c.toString());
             }
+
+            ps.execute();
             rs.close();
-            stmt.close();
-            this.closeConnection();
+            ps.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        this.closeConnection();
+
+        return c;
+    }
+
+    public Cuenta getCuentaCliente(String n, String a) {
+
+        Cuenta c = null;
+
+        this.openConnection();
+
+        try {
+
+            PreparedStatement ps = con.prepareStatement(getCuentaCliente);
+            ps.setString(1, n);
+            ps.setString(2, a);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                c = new Cuenta();
+                c.setIdCuenta(rs.getLong("id"));
+                c.setBalance(rs.getDouble("balance"));
+                c.setBalanceInicial(rs.getDouble("beginBalance"));
+                c.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
+                c.setLineaCredito(rs.getDouble("creditLine"));
+                c.setDescripcion(rs.getString("description"));
+                c.setTipo(rs.getInt("type"));
+                System.out.println(c.toString());
+            }
+
+            ps.execute();
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.closeConnection();
 
         return c;
     }
