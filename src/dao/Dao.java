@@ -32,8 +32,8 @@ public class Dao {
 
     private final String setCustomer = "INSERT INTO customer (firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?)";
     private final String getCustomers = "SELECT * FROM customer WHERE firstName LIKE ?";
-    private final String getCuentaCliente = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
-
+    private final String getCustomerAccount = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
+    private final String setAccount = "INSERT INTO account (balance,beginBalance,beginBalanceTimestamp,creditLine,description,type) VALUES (?,?,?,?,?,?)";
     public Dao() {
         this.configFile = ResourceBundle.getBundle("config.config");
         this.driverBD = this.configFile.getString("Driver");
@@ -142,7 +142,7 @@ public class Dao {
 
         try {
 
-            PreparedStatement ps = con.prepareStatement(getCuentaCliente);
+            PreparedStatement ps = con.prepareStatement(getCustomerAccount);
             ps.setString(1, n);
             ps.setString(2, a);
             ResultSet rs = ps.executeQuery();
@@ -161,6 +161,31 @@ public class Dao {
 
             ps.execute();
             rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.closeConnection();
+
+        return c;
+    }
+    
+    public Cuenta setAccount(Cuenta c) {
+       this.openConnection();
+
+        try {
+
+            PreparedStatement ps = con.prepareStatement(setAccount);
+            ps.setDouble(1, c.getBalance());
+            ps.setDouble(2, c.getBalanceInicial());
+            ps.setTimestamp(3, c.getBalanceInicialFecha());
+            ps.setDouble(4, c.getLineaCredito());
+            ps.setString(5, c.getDescripcion());
+            ps.setInt(6, c.getTipo());
+
+            ps.execute();
             ps.close();
 
         } catch (SQLException e) {

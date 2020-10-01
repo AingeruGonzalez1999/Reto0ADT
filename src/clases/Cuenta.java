@@ -7,6 +7,8 @@ package clases;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import utilidades.Utilidades;
 
 /**
  *
@@ -58,7 +60,7 @@ public class Cuenta implements Serializable {
     }
 
     public void setBalanceInicialFecha(Timestamp balanceInicialFecha) {
-        this.balanceInicialFecha = balanceInicialFecha;
+    this.balanceInicialFecha = balanceInicialFecha;
     }
 
     public double getLineaCredito() {
@@ -85,6 +87,22 @@ public class Cuenta implements Serializable {
         this.tipo = tipo;
     }
 
+    public void setDatosCuenta(){
+        System.out.println("Introduce balance:");
+        balance = Utilidades.leerDouble();
+        System.out.println("Introduce balance inicial:");
+        balanceInicial = Utilidades.leerDouble();
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp timestamp=Timestamp.valueOf(now);
+        balanceInicialFecha=timestamp;
+        System.out.println("Introduce  linea de credito:");
+        lineaCredito = Utilidades.leerDouble();
+        System.out.println("Introduce descripcion:");
+        descripcion = Utilidades.introducirCadena();
+        System.out.println("Introduce tipo:");
+        tipo = Utilidades.leerInt();
+       
+    }
     @Override
     public String toString() {
         return "Cuenta{" + "idCuenta=" + idCuenta + ", balance=" + balance + ", balanceInicial=" + balanceInicial + ", balanceInicialFecha=" + balanceInicialFecha + ", lineaCredito=" + lineaCredito + ", descripcion=" + descripcion + ", tipo=" + tipo + '}';

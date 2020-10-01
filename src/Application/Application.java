@@ -1,6 +1,7 @@
 package Application;
 
 import clases.Cliente;
+import clases.Cuenta;
 import dao.Dao;
 import utilidades.Utilidades;
 
@@ -104,7 +105,11 @@ public class Application {
     }
 
     private static void crearCuentaCliente() {
-
+       Cuenta c = new Cuenta();
+       c.setDatosCuenta();
+        dao.setAccount(c);
+       
+        
     }
 
     private static void agregarClienteCuenta() {
