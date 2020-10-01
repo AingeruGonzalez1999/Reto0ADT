@@ -116,7 +116,7 @@ public class Cliente implements Serializable {
         System.out.println("Introduce nombre:");
         nombre = Utilidades.introducirCadena();
         System.out.println("Introduce apellido:");
-        apellido = Utilidades.introducirCadena();      
+        apellido = Utilidades.introducirCadena();
         inicial = nombre.substring(0).toUpperCase().concat(".");
         System.out.println("Introduce calle:");
         calle = Utilidades.introducirCadena();

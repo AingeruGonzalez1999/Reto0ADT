@@ -96,11 +96,15 @@ public class Application {
     }
 
     private static void consultarCuentaCliente() {
-        
+        System.out.println("Introduce nombre cliente para ver sus cuentas:");
+        String nom = Utilidades.introducirCadena();
+        System.out.println("Introduce apellido cliente para ver sus cuentas:");
+        String ape = Utilidades.introducirCadena();
+        dao.getCuentaCliente(nom, ape);
     }
 
     private static void crearCuentaCliente() {
-    
+
     }
 
     private static void agregarClienteCuenta() {
@@ -108,15 +112,15 @@ public class Application {
     }
 
     private static void consultarDatosCuenta() {
-    
+
     }
 
     private static void realizarMovimiento() {
-    
+
     }
 
     private static void consultarMovimiento() {
-    
+
     }
 
 }
