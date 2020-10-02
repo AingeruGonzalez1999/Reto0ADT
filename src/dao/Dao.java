@@ -2,6 +2,7 @@ package dao;
 
 import clases.Cliente;
 import clases.Cuenta;
+import clases.CuentaCliente;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,10 +33,11 @@ public class Dao {
 
     private final String setCustomer = "INSERT INTO customer (firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?)";
     private final String getCustomers = "SELECT * FROM customer WHERE firstName LIKE ?";
+    private final String getCustomersId = "SELECT * FROM customer WHERE id LIKE ?";
     private final String getCustomerAccount = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
     private final String setAccount = "INSERT INTO account (balance,beginBalance,beginBalanceTimestamp,creditLine,description,type) VALUES (?,?,?,?,?,?)";
     private final String getAccount = "SELECT * FROM account WHERE id = ? ";
-
+    private final String setCustomerAccount ="INSERT INTO customer_account (customers_id,accounts_id) VALUES (?,?)";
     public Dao() {
         this.configFile = ResourceBundle.getBundle("config.config");
         this.driverBD = this.configFile.getString("Driver");
@@ -186,10 +188,9 @@ public class Dao {
             ps.setDouble(4, c.getLineaCredito());
             ps.setString(5, c.getDescripcion());
             ps.setInt(6, c.getTipo());
-
             ps.execute();
             ps.close();
-
+           
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -228,5 +229,67 @@ public class Dao {
         this.closeConnection();
         return u;
     }
+    
+    public void comprobarCliente(long i) {
+
+        Cliente cli = new Cliente();
+        Cuenta c = new Cuenta();
+        this.openConnection();
+
+        try {
+
+            PreparedStatement ps = con.prepareStatement(getCustomersId);
+            ps.setLong(1, i);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+               
+                if(rs.getLong("id")==i){
+                    System.out.println("Cliente Existete");
+                    setAccount(c);
+                    agregarCuentaCliente(c, cli);
+                    break;
+                } else{
+                    System.out.println("No existe el cliente, se va a crear uno");
+                    setCustomer(cli);
+                    setAccount(c);
+                    agregarCuentaCliente(c, cli);
+                    break;
+                }
+               
+            }
+
+            ps.execute();
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.closeConnection();
+
+    }
+     public void  agregarCuentaCliente(Cuenta c, Cliente cli){
+         CuentaCliente cc = null;
+         this.openConnection();
+         try {
+
+            PreparedStatement ps = con.prepareStatement(setCustomerAccount);
+            ps.setLong(1, cli.getIdCliente());
+            ps.setLong(2, c.getIdCuenta());
+           
+
+            ps.execute();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.closeConnection();
+
+     }
+
 
 }

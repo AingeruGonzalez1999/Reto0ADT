@@ -2,6 +2,7 @@ package Application;
 
 import clases.Cliente;
 import clases.Cuenta;
+import clases.CuentaCliente;
 import dao.Dao;
 import utilidades.Utilidades;
 
@@ -105,10 +106,9 @@ public class Application {
     }
 
     private static void crearCuentaCliente() {
-        Cuenta c = new Cuenta();
-        c.setDatosCuenta();
-        dao.setAccount(c);
-
+        System.out.println("Introduce ID cliente para crear la cuenta:");
+        long id = Utilidades.leerInt();
+        dao.comprobarCliente(id);
     }
 
     private static void agregarClienteCuenta() {
