@@ -3,6 +3,7 @@ package dao;
 import clases.Cliente;
 import clases.Cuenta;
 import clases.CuentaCliente;
+import clases.Movimiento;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -30,14 +31,21 @@ public class Dao {
     private String urlBD = "";
     private String userBD = "";
     private String passwordBD = "";
-
+    /**
+     * Querys de BBDD
+     */
     private final String setCustomer = "INSERT INTO customer (firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?)";
     private final String getCustomers = "SELECT * FROM customer WHERE firstName LIKE ?";
     private final String getCustomersId = "SELECT * FROM customer WHERE id LIKE ?";
     private final String getCustomerAccount = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
     private final String setAccount = "INSERT INTO account (balance,beginBalance,beginBalanceTimestamp,creditLine,description,type) VALUES (?,?,?,?,?,?)";
     private final String getAccount = "SELECT * FROM account WHERE id = ? ";
-    private final String setCustomerAccount ="INSERT INTO customer_account (customers_id,accounts_id) VALUES (?,?)";
+    private final String setCustomerAccount = "INSERT INTO customer_account (customers_id,accounts_id) VALUES (?,?)";
+    private final String getMovement = "SELECT * FROM movement m, account a WHERE m.account_id LIKE a.id AND a.id LIKE ?";
+
+    /**
+     * Constructor de BBDD
+     */
     public Dao() {
         this.configFile = ResourceBundle.getBundle("config.config");
         this.driverBD = this.configFile.getString("Driver");
@@ -46,6 +54,9 @@ public class Dao {
         this.passwordBD = this.configFile.getString("DBPass");
     }
 
+    /**
+     * Abrir conexion BBDD
+     */
     private void openConnection() {
         try {
             Class.forName(this.driverBD);
@@ -57,6 +68,9 @@ public class Dao {
         }
     }
 
+    /**
+     * Cerrar conexion BBDD
+     */
     private void closeConnection() {
         try {
             if (stat != null) {
@@ -70,6 +84,9 @@ public class Dao {
         }
     }
 
+    /**
+     * Agrega cliente a BBDD
+     */
     public Cliente setCustomer(Cliente c) {
 
         this.openConnection();
@@ -99,6 +116,9 @@ public class Dao {
         return c;
     }
 
+    /**
+     * Saca datos de cliente de BBDD
+     */
     public Cliente getCustomers(String n) {
 
         Cliente c = null;
@@ -138,6 +158,10 @@ public class Dao {
         return c;
     }
 
+    /**
+     * Muestra cuenta de cliente especifico de BBDD
+     *
+     */
     public Cuenta getCuentaCliente(String n, String a) {
 
         Cuenta c = null;
@@ -176,6 +200,9 @@ public class Dao {
         return c;
     }
 
+    /**
+     * Introduce cuenta nueva en BBDD
+     */
     public Cuenta setAccount(Cuenta c) {
         this.openConnection();
 
@@ -190,7 +217,7 @@ public class Dao {
             ps.setInt(6, c.getTipo());
             ps.execute();
             ps.close();
-           
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -200,6 +227,10 @@ public class Dao {
         return c;
     }
 
+    /**
+     * Muestra cuenta especifica de BBDD
+     *
+     */
     public Cuenta getAccount(long a) {
 
         Cuenta u = null;
@@ -229,7 +260,11 @@ public class Dao {
         this.closeConnection();
         return u;
     }
-    
+
+    /**
+     * Metodo para comprobar un cliente existente o no
+     *
+     */
     public void comprobarCliente(long i) {
 
         Cliente cli = new Cliente();
@@ -243,20 +278,79 @@ public class Dao {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-               
-                if(rs.getLong("id")==i){
-                    System.out.println("Cliente Existete");
-                    setAccount(c);
-                    agregarCuentaCliente(c, cli);
-                    break;
-                } else{
-                    System.out.println("No existe el cliente, se va a crear uno");
-                    setCustomer(cli);
-                    setAccount(c);
-                    agregarCuentaCliente(c, cli);
-                    break;
-                }
-               
+
+                System.out.println("Cliente Existente");
+                c.setDatosCuenta();
+                c = setAccount(c);
+                agregarCuentaCliente(c, cli);
+                break;
+
+            }
+
+            ps.execute();
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            System.out.println("No existe el cliente, se va a crear uno");
+            setCustomer(cli);
+            cli.setDatosCliente();
+            c.setDatosCuenta();
+            c = setAccount(c);
+            agregarCuentaCliente(c, cli);
+        }
+
+        this.closeConnection();
+
+    }
+
+    /**
+     * Metodo para crear cuenta a cliente
+     */
+    public void agregarCuentaCliente(Cuenta c, Cliente cli) {
+
+        this.openConnection();
+        try {
+
+            PreparedStatement ps = con.prepareStatement(setCustomerAccount);
+            ps.setLong(1, cli.getIdCliente());
+            ps.setLong(2, c.getIdCuenta());
+
+            ps.execute();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        this.closeConnection();
+
+    }
+
+    /**
+     * Metodo para consultar movimiento en BBDD
+     */
+    public Movimiento getMovements(long i) {
+
+        Movimiento m = null;
+
+        this.openConnection();
+
+        try {
+
+            PreparedStatement ps = con.prepareStatement(getMovement);
+            ps.setLong(1, i);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                m = new Movimiento();
+                m.setIdMovimiento(rs.getLong("id"));
+                m.setCantidad(rs.getDouble("amount"));
+                m.setBalanceMov(rs.getDouble("balance"));
+                m.setDescripcionMov(rs.getString("description"));
+                m.setFecha(rs.getTimestamp("timestamp"));
+                System.out.println(m.toString());
+
             }
 
             ps.execute();
@@ -269,27 +363,6 @@ public class Dao {
 
         this.closeConnection();
 
+        return m;
     }
-     public void  agregarCuentaCliente(Cuenta c, Cliente cli){
-         CuentaCliente cc = null;
-         this.openConnection();
-         try {
-
-            PreparedStatement ps = con.prepareStatement(setCustomerAccount);
-            ps.setLong(1, cli.getIdCliente());
-            ps.setLong(2, c.getIdCuenta());
-           
-
-            ps.execute();
-            ps.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        this.closeConnection();
-
-     }
-
-
 }

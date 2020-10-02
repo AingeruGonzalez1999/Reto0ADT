@@ -12,9 +12,7 @@ import utilidades.Utilidades;
  * and open the template in the editor.
  */
 /**
- * @version 1.0
- * @author Garikoitz
- * @author Aingeru
+ * Ejecuta la aplicacion
  */
 public class Application {
 
@@ -64,7 +62,10 @@ public class Application {
             }
         } while (m != 9);
     }
-
+    /**
+     * Muestra el menu
+     * @return devuelve entero con la opcion seleccionada
+     */
     public static int obtenerOpcMenu() {
         int opc;
 
@@ -85,18 +86,27 @@ public class Application {
         return opc;
     }
 
+    /**
+     * Crea un nuevo cliente
+     */
     private static void crearCliente() {
         Cliente c = new Cliente();
         c.setDatosCliente();
         dao.setCustomer(c);
     }
 
+    /**
+     * Consulta datos de un cliente
+     */
     private static void consultarCliente() {
         System.out.println("Introuce cliente a consultar:");
         String n = Utilidades.introducirCadena();
         dao.getCustomers(n);
     }
 
+    /**
+     * Consulta cuenta/s de un cliente
+     */
     private static void consultarCuentaCliente() {
         System.out.println("Introduce nombre cliente para ver sus cuentas:");
         String nom = Utilidades.introducirCadena();
@@ -105,16 +115,27 @@ public class Application {
         dao.getCuentaCliente(nom, ape);
     }
 
+    /**
+     * Crea cuenta/cliente para cliente
+     */
     private static void crearCuentaCliente() {
+       // Cuenta c = new Cuenta();
         System.out.println("Introduce ID cliente para crear la cuenta:");
-        long id = Utilidades.leerInt();
+        long id = Utilidades.leerLong();
         dao.comprobarCliente(id);
+       // c.setDatosCuenta();
+        
     }
-
+    /**
+     * Agrega cliente a cuenta
+     */
     private static void agregarClienteCuenta() {
 
     }
 
+    /**
+     * Consulta datos de una cuenta
+     */
     private static void consultarDatosCuenta() {
 
         System.out.println("Introuce ID de cuenta a consultar:");
@@ -123,12 +144,20 @@ public class Application {
 
     }
 
+    /**
+     * Realiza un movimiento
+     */
     private static void realizarMovimiento() {
 
     }
 
+    /**
+     * Consulta movimientos de una cuenta
+     */
     private static void consultarMovimiento() {
-
+        System.out.println("Introduce Id de cuenta:");
+        long n = Utilidades.leerLong();
+        dao.getMovements(n);
     }
 
 }
