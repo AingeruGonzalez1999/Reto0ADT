@@ -44,6 +44,23 @@ public class Utilidades {
 
 		return num;
 	}
+        public static long leerLong() {
+
+		boolean ok = true;
+		long num = 0;
+
+		do {
+			try {
+				num = Long.parseLong(introducirCadena());
+				ok = true;
+			} catch (Exception e) {
+				System.out.println("Error. El dato no es un entero");
+				ok = false;
+			}
+		} while (!ok);
+
+		return num;
+	}
 
 	public static float leerFloat() {
 
