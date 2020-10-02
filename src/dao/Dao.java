@@ -34,6 +34,8 @@ public class Dao {
     private final String getCustomers = "SELECT * FROM customer WHERE firstName LIKE ?";
     private final String getCustomerAccount = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
     private final String setAccount = "INSERT INTO account (balance,beginBalance,beginBalanceTimestamp,creditLine,description,type) VALUES (?,?,?,?,?,?)";
+    private final String getAccount = "SELECT * FROM account WHERE id = ? ";
+
     public Dao() {
         this.configFile = ResourceBundle.getBundle("config.config");
         this.driverBD = this.configFile.getString("Driver");
@@ -171,9 +173,9 @@ public class Dao {
 
         return c;
     }
-    
+
     public Cuenta setAccount(Cuenta c) {
-       this.openConnection();
+        this.openConnection();
 
         try {
 
@@ -196,4 +198,35 @@ public class Dao {
 
         return c;
     }
+
+    public Cuenta getAccount(long a) {
+
+        Cuenta u = null;
+        this.openConnection();
+        try {
+
+            PreparedStatement ps = con.prepareStatement(getAccount);
+            ps.setLong(1, a);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                u = new Cuenta();
+                u.setBalance(rs.getDouble("balance"));
+                u.setBalanceInicial(rs.getDouble("beginBalance"));
+                u.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
+                u.setLineaCredito(rs.getDouble("creditLine"));
+                u.setDescripcion(rs.getString("description"));
+                u.setTipo(rs.getInt("type"));
+                System.out.println(u.toString());
+            }
+            ps.execute();
+            ps.close();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        this.closeConnection();
+        return u;
+    }
+
 }

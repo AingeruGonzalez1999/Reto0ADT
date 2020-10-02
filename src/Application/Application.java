@@ -105,11 +105,10 @@ public class Application {
     }
 
     private static void crearCuentaCliente() {
-       Cuenta c = new Cuenta();
-       c.setDatosCuenta();
+        Cuenta c = new Cuenta();
+        c.setDatosCuenta();
         dao.setAccount(c);
-       
-        
+
     }
 
     private static void agregarClienteCuenta() {
@@ -117,6 +116,10 @@ public class Application {
     }
 
     private static void consultarDatosCuenta() {
+
+        System.out.println("Introuce ID de cuenta a consultar:");
+        long a = Utilidades.leerInt();
+        dao.getAccount(a);
 
     }
 
