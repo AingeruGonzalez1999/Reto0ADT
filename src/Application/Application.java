@@ -71,21 +71,20 @@ public class Application {
 
         System.out.println("B A N C O");
         System.out.println("**********************************************************");
-        System.out.println("1. Crear cliente.");
-        System.out.println("2. Consultar datos de un cliente.");
-        System.out.println("3. Consultar cuentas de un cliente.");
-        System.out.println("4. Crear cuenta para cliente.");
-        System.out.println("5. Agregar cliente a cuenta.");
-        System.out.println("6. Consultar datos de una cuenta.");
-        System.out.println("7. Realizar movimiento sobre una cuenta.");
-        System.out.println("8. Consultar movimientos de una cuenta.");
+        System.out.println("1. Crear cliente."); // Hecho
+        System.out.println("2. Consultar datos de un cliente."); // Hecho
+        System.out.println("3. Consultar cuentas de un cliente."); // Hecho
+        System.out.println("4. Crear cuenta para cliente."); // Acabar
+        System.out.println("5. Agregar cliente a cuenta."); // Hecho
+        System.out.println("6. Consultar datos de una cuenta."); // Hecho
+        System.out.println("7. Realizar movimiento sobre una cuenta."); // Acabar
+        System.out.println("8. Consultar movimientos de una cuenta."); // Hecho
         System.out.println("9. S A L I R ");
         System.out.println("**********************************************************");
         System.out.println("Introduce opción: ");
         opc = Utilidades.leerInt(1, 9);
         return opc;
     }
-
     /**
      * Crea un nuevo cliente
      */
@@ -94,7 +93,6 @@ public class Application {
         c.setDatosCliente();
         dao.setCustomer(c);
     }
-
     /**
      * Consulta datos de un cliente
      */
@@ -103,7 +101,6 @@ public class Application {
         String n = Utilidades.introducirCadena();
         dao.getCustomers(n);
     }
-
     /**
      * Consulta cuenta/s de un cliente
      */
@@ -114,25 +111,24 @@ public class Application {
         String ape = Utilidades.introducirCadena();
         dao.getCuentaCliente(nom, ape);
     }
-
     /**
      * Crea cuenta/cliente para cliente
      */
     private static void crearCuentaCliente() {
-       // Cuenta c = new Cuenta();
         System.out.println("Introduce ID cliente para crear la cuenta:");
         long id = Utilidades.leerLong();
-        dao.comprobarCliente(id);
-       // c.setDatosCuenta();
-        
+        dao.comprobarCliente(id); 
     }
     /**
      * Agrega cliente a cuenta
      */
     private static void agregarClienteCuenta() {
-
+        System.out.println("Introduce ID de cliente:");
+        long idCli = Utilidades.leerLong();
+        System.out.println("Introduce ID de cuenta a asociar:");
+        long idCu = Utilidades.leerLong();
+        dao.agregarCuentaCliente(idCli, idCu);
     }
-
     /**
      * Consulta datos de una cuenta
      */
@@ -143,14 +139,12 @@ public class Application {
         dao.getAccount(a);
 
     }
-
     /**
      * Realiza un movimiento
      */
     private static void realizarMovimiento() {
 
     }
-
     /**
      * Consulta movimientos de una cuenta
      */
@@ -159,5 +153,4 @@ public class Application {
         long n = Utilidades.leerLong();
         dao.getMovements(n);
     }
-
 }
