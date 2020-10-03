@@ -2,7 +2,6 @@ package dao;
 
 import clases.Cliente;
 import clases.Cuenta;
-import clases.CuentaCliente;
 import clases.Movimiento;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,8 +18,7 @@ import java.util.logging.Logger;
  * and open the template in the editor.
  */
 /**
- *
- * @author gsalg
+ * Esta clase controla las entradas y salidas de datos de la BD
  */
 public class Dao {
 
@@ -31,18 +29,20 @@ public class Dao {
     private String urlBD = "";
     private String userBD = "";
     private String passwordBD = "";
+    
     /**
      * Querys de BBDD
      */
     private final String setCustomer = "INSERT INTO customer (firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?)";
     private final String getCustomers = "SELECT * FROM customer WHERE firstName LIKE ?";
-    private final String getCustomersId = "SELECT * FROM customer WHERE id LIKE ?";
+    private final String getCustomersId = "SELECT * FROM customer WHERE id LIKE ?";   
     private final String getCustomerAccount = "SELECT * FROM account a, customer c, customer_account ca where a.id=ca.accounts_id and c.id=ca.customers_id and firstName = ? and lastName = ?";
-    private final String setAccount = "INSERT INTO account (balance,beginBalance,beginBalanceTimestamp,creditLine,description,type) VALUES (?,?,?,?,?,?)";
-    private final String getAccount = "SELECT * FROM account WHERE id = ? ";
-    private final String setCustomerAccount = "INSERT INTO customer_account (customers_id,accounts_id) VALUES (?,?)";
+    private final String setAccount = "INSERT INTO account (balance, beginBalance, beginBalanceTimestamp, creditLine, description, type) VALUES (?,?,?,?,?,?)";   
+    private final String getAccount = "SELECT * FROM account WHERE id = ? ";       
+    private final String setCustomerAccount = "INSERT INTO customer_account VALUES (?,?)";  
     private final String getMovement = "SELECT * FROM movement m, account a WHERE m.account_id LIKE a.id AND a.id LIKE ?";
-
+    private final String getFinalAccountID = "SELECT MAX(id) from account";
+    
     /**
      * Constructor de BBDD
      */
@@ -53,7 +53,6 @@ public class Dao {
         this.userBD = this.configFile.getString("DBUser");
         this.passwordBD = this.configFile.getString("DBPass");
     }
-
     /**
      * Abrir conexion BBDD
      */
@@ -67,7 +66,6 @@ public class Dao {
             Logger.getLogger(Dao.class.getName()).log(Level.SEVERE, null, e1);
         }
     }
-
     /**
      * Cerrar conexion BBDD
      */
@@ -83,9 +81,10 @@ public class Dao {
             System.out.println("ERROR CERRANDO CONEXION");
         }
     }
-
     /**
      * Agrega cliente a BBDD
+     * @param c
+     * @return 
      */
     public Cliente setCustomer(Cliente c) {
 
@@ -108,16 +107,16 @@ public class Dao {
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         this.closeConnection();
 
         return c;
     }
-
     /**
      * Saca datos de cliente de BBDD
+     * @param n
+     * @return 
      */
     public Cliente getCustomers(String n) {
 
@@ -150,17 +149,18 @@ public class Dao {
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         this.closeConnection();
 
         return c;
     }
-
     /**
      * Muestra cuenta de cliente especifico de BBDD
      *
+     * @param n
+     * @param a
+     * @return 
      */
     public Cuenta getCuentaCliente(String n, String a) {
 
@@ -192,16 +192,16 @@ public class Dao {
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         this.closeConnection();
 
         return c;
     }
-
     /**
      * Introduce cuenta nueva en BBDD
+     * @param c
+     * @return 
      */
     public Cuenta setAccount(Cuenta c) {
         this.openConnection();
@@ -219,21 +219,20 @@ public class Dao {
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         this.closeConnection();
 
         return c;
     }
-
     /**
      * Muestra cuenta especifica de BBDD
-     *
+     * @param a
+     * @return 
      */
     public Cuenta getAccount(long a) {
 
-        Cuenta u = null;
+        Cuenta c = null;
         this.openConnection();
         try {
 
@@ -241,97 +240,90 @@ public class Dao {
             ps.setLong(1, a);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                u = new Cuenta();
-                u.setBalance(rs.getDouble("balance"));
-                u.setBalanceInicial(rs.getDouble("beginBalance"));
-                u.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
-                u.setLineaCredito(rs.getDouble("creditLine"));
-                u.setDescripcion(rs.getString("description"));
-                u.setTipo(rs.getInt("type"));
-                System.out.println(u.toString());
+                c = new Cuenta();
+                c.setBalance(rs.getDouble("balance"));
+                c.setBalanceInicial(rs.getDouble("beginBalance"));
+                c.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
+                c.setLineaCredito(rs.getDouble("creditLine"));
+                c.setDescripcion(rs.getString("description"));
+                c.setTipo(rs.getInt("type"));
+                System.out.println(c.toString());
             }
             ps.execute();
             ps.close();
 
         } catch (SQLException e) {
-
-            e.printStackTrace();
         }
         this.closeConnection();
-        return u;
+        return c;
     }
-
     /**
      * Metodo para comprobar un cliente existente o no
-     *
+     * @param i
      */
     public void comprobarCliente(long i) {
 
-        Cliente cli = new Cliente();
+        //Cliente cli = new Cliente();
         Cuenta c = new Cuenta();
+        Cuenta cue = new Cuenta();
+        long idCuenta;
+        
         this.openConnection();
 
         try {
 
             PreparedStatement ps = con.prepareStatement(getCustomersId);
             ps.setLong(1, i);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                System.out.println("Cliente Existente");
-                c.setDatosCuenta();
-                c = setAccount(c);
-                agregarCuentaCliente(c, cli);
-                break;
-
-            }
-
-            ps.execute();
-            rs.close();
-            ps.close();
-
-        } catch (SQLException e) {
-            System.out.println("No existe el cliente, se va a crear uno");
-            setCustomer(cli);
-            cli.setDatosCliente();
+            
+            System.out.println("Cliente existente");
+            
             c.setDatosCuenta();
-            c = setAccount(c);
-            agregarCuentaCliente(c, cli);
+            setAccount(c);
+            
+            cue = getIdAccount();
+            idCuenta = cue.getIdCuenta();
+            System.out.println(idCuenta);
+            agregarCuentaCliente(i, idCuenta); //102263301
+            
+            ps.execute();
+            ps.close();
+            
+        } catch (SQLException e) {
+            
         }
 
         this.closeConnection();
 
     }
-
     /**
      * Metodo para crear cuenta a cliente
+     * @param c
+     * @param cli
      */
-    public void agregarCuentaCliente(Cuenta c, Cliente cli) {
+    public void agregarCuentaCliente(long cli, long c) {
 
         this.openConnection();
         try {
 
             PreparedStatement ps = con.prepareStatement(setCustomerAccount);
-            ps.setLong(1, cli.getIdCliente());
-            ps.setLong(2, c.getIdCuenta());
+            ps.setLong(1, cli);
+            ps.setLong(2, c);
 
             ps.execute();
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         this.closeConnection();
 
     }
-
     /**
      * Metodo para consultar movimiento en BBDD
+     * @param i
+     * @return 
      */
     public Movimiento getMovements(long i) {
-
         Movimiento m = null;
 
         this.openConnection();
@@ -358,11 +350,39 @@ public class Dao {
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         this.closeConnection();
 
         return m;
+    }
+    /**
+     * Devuelve el id de la ultima cuenta
+     * @return 
+     */
+    public Cuenta getIdAccount() {
+        Cuenta c = null;
+        this.openConnection();
+        try {
+
+            PreparedStatement ps = con.prepareStatement(getFinalAccountID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                c = new Cuenta();
+                c.setIdCuenta(rs.getLong("id"));
+                c.setBalance(rs.getDouble("balance"));
+                c.setBalanceInicial(rs.getDouble("beginBalance"));
+                c.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
+                c.setLineaCredito(rs.getDouble("creditLine"));
+                c.setDescripcion(rs.getString("description"));
+                c.setTipo(rs.getInt("type"));
+            }
+            ps.execute();
+            ps.close();
+
+        } catch (SQLException e) {
+        }
+        this.closeConnection();
+        return c;
     }
 }

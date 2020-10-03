@@ -100,7 +100,7 @@ public class Cuenta implements Serializable {
         System.out.println("Introduce descripcion:");
         descripcion = Utilidades.introducirCadena();
         System.out.println("Introduce tipo:");
-        tipo = Utilidades.leerInt();
+        tipo = Utilidades.leerInt(0, 1);
        
     }
     @Override
