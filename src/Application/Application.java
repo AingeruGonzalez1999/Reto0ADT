@@ -62,8 +62,10 @@ public class Application {
             }
         } while (m != 9);
     }
+
     /**
      * Muestra el menu
+     *
      * @return devuelve entero con la opcion seleccionada
      */
     public static int obtenerOpcMenu() {
@@ -71,20 +73,21 @@ public class Application {
 
         System.out.println("B A N C O");
         System.out.println("**********************************************************");
-        System.out.println("1. Crear cliente."); // Hecho
-        System.out.println("2. Consultar datos de un cliente."); // Hecho
-        System.out.println("3. Consultar cuentas de un cliente."); // Hecho
-        System.out.println("4. Crear cuenta para cliente."); // Acabar
-        System.out.println("5. Agregar cliente a cuenta."); // Hecho
-        System.out.println("6. Consultar datos de una cuenta."); // Hecho
-        System.out.println("7. Realizar movimiento sobre una cuenta."); // Acabar
-        System.out.println("8. Consultar movimientos de una cuenta."); // Hecho
+        System.out.println("1. Crear cliente.");
+        System.out.println("2. Consultar datos de un cliente.");
+        System.out.println("3. Consultar cuentas de un cliente.");
+        System.out.println("4. Crear cuenta para cliente.");
+        System.out.println("5. Agregar cliente a cuenta.");
+        System.out.println("6. Consultar datos de una cuenta.");
+        System.out.println("7. Realizar movimiento sobre una cuenta.");
+        System.out.println("8. Consultar movimientos de una cuenta.");
         System.out.println("9. S A L I R ");
         System.out.println("**********************************************************");
         System.out.println("Introduce opción: ");
         opc = Utilidades.leerInt(1, 9);
         return opc;
     }
+
     /**
      * Crea un nuevo cliente
      */
@@ -93,6 +96,7 @@ public class Application {
         c.setDatosCliente();
         dao.setCustomer(c);
     }
+
     /**
      * Consulta datos de un cliente
      */
@@ -101,6 +105,7 @@ public class Application {
         String n = Utilidades.introducirCadena();
         dao.getCustomers(n);
     }
+
     /**
      * Consulta cuenta/s de un cliente
      */
@@ -111,14 +116,16 @@ public class Application {
         String ape = Utilidades.introducirCadena();
         dao.getCuentaCliente(nom, ape);
     }
+
     /**
      * Crea cuenta/cliente para cliente
      */
     private static void crearCuentaCliente() {
         System.out.println("Introduce ID cliente para crear la cuenta:");
         long id = Utilidades.leerLong();
-        dao.comprobarCliente(id); 
+        dao.comprobarCliente(id);
     }
+
     /**
      * Agrega cliente a cuenta
      */
@@ -129,17 +136,16 @@ public class Application {
         long idCu = Utilidades.leerLong();
         dao.agregarCuentaCliente(idCli, idCu);
     }
+
     /**
      * Consulta datos de una cuenta
      */
     private static void consultarDatosCuenta() {
-
         System.out.println("Introuce ID de cuenta a consultar:");
         long a = Utilidades.leerLong();
         dao.getAccount(a);
-
     }
-    
+
     /**
      * Realiza un movimiento
      */
@@ -161,8 +167,7 @@ public class Application {
             if(type == 1){
                 desc = "Deposit";
                 System.out.println("Introduce cantidad a depositar: ");
-            }
-            else{
+            }else{
                 desc = "Payment";
                 System.out.println("Introduce cantidad a retirar: ");
             }
@@ -170,8 +175,10 @@ public class Application {
             dao.realizarMovimiento(acco, amount, desc, type);
         }else//The account doesn't exist
             System.out.println("Cuenta no existente.");
+          }
+         
     }
-    
+       
     /**
      * Consulta movimientos de una cuenta
      */

@@ -130,6 +130,25 @@ public class Cliente implements Serializable {
         System.out.println("Introduce teléfono:");
         telefono = Utilidades.leerInt();
     }
+    public void setDatosClienteSinId(long i) {
+        idCliente = i;
+        System.out.println("Introduce nombre:");
+        nombre = Utilidades.introducirCadena();
+        System.out.println("Introduce apellido:");
+        apellido = Utilidades.introducirCadena();
+        inicial = nombre.substring(0).toUpperCase().concat(".");
+        System.out.println("Introduce calle:");
+        calle = Utilidades.introducirCadena();
+        System.out.println("Introduce ciudad:");
+        ciudad = Utilidades.introducirCadena();
+        System.out.println("Introduce provincia:");
+        provincia = Utilidades.introducirCadena();
+        email = nombre.substring(0).concat(apellido).concat("@").concat("gmail.com");
+        System.out.println("Introduce código postal:");
+        codigoPostal = Utilidades.leerInt();
+        System.out.println("Introduce teléfono:");
+        telefono = Utilidades.leerInt();
+    }
 
     @Override
     public String toString() {
