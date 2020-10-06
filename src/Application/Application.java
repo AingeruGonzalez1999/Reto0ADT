@@ -142,7 +142,7 @@ public class Application {
      */
     private static void consultarDatosCuenta() {
         System.out.println("Introuce ID de cuenta a consultar:");
-        long a = Utilidades.leerInt();
+        long a = Utilidades.leerLong();
         dao.getAccount(a);
     }
 
@@ -150,9 +150,35 @@ public class Application {
      * Realiza un movimiento
      */
     private static void realizarMovimiento() {
+        String desc = null;
+        double amount = 0;
+        Cuenta acco= null;
+        
+        //Ask for Account ID
+        System.out.println("Introduce ID de la cuenta: ");
+        long id = Utilidades.leerLong();
+        acco = dao.getAccount(id);//The account exists?
+        
+        if(acco != null){//If the account exists, 'acco' is not null
+            System.out.println("Que desea hacer?:\n"
+                    + "1).Depositar dinero.\n"
+                    + "2).Retirar dinero.\n");
+            int type = Utilidades.leerInt(1, 2);
+            if(type == 1){
+                desc = "Deposit";
+                System.out.println("Introduce cantidad a depositar: ");
+            }else{
+                desc = "Payment";
+                System.out.println("Introduce cantidad a retirar: ");
+            }
+            amount = Utilidades.leerDouble();
+            dao.realizarMovimiento(acco, amount, desc, type);
+        }else//The account doesn't exist
+            System.out.println("Cuenta no existente.");
+          }
          
     }
-
+       
     /**
      * Consulta movimientos de una cuenta
      */

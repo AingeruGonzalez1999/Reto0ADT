@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +42,9 @@ public class Dao {
     private final String getAccount = "SELECT * FROM account WHERE id = ? ";
     private final String setCustomerAccount = "INSERT INTO customer_account VALUES (?,?)";
     private final String getMovement = "SELECT * FROM movement m, account a WHERE m.account_id LIKE a.id AND a.id LIKE ?";
+    private final String getFinalMovementID = "SELECT MAX(id) from movement";
+    private final String updateBalance ="update account set balance = ? where id = ?";
+    private final String setMovement = "insert into movement values (?, ?, ?, ?, ?, ?)";
     private final String getFinalAccountID = "SELECT MAX(id) from account";
     private final String setCustomerNew = "INSERT INTO customer (id, firstName, lastName, middleInitial, street, city, state, email, zip, phone) VALUES (?,?,?,?,?,?,?,?,?,?)";
 
@@ -250,6 +254,7 @@ public class Dao {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 c = new Cuenta();
+                c.setIdCuenta(rs.getLong("id"));
                 c.setBalance(rs.getDouble("balance"));
                 c.setBalanceInicial(rs.getDouble("beginBalance"));
                 c.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
@@ -348,6 +353,88 @@ public class Dao {
 
         this.closeConnection();
 
+    }
+
+    /**
+     * Metod to make a movement and update the balance of the account
+     * @param acco Account to update the balance
+     * @param ammount of money of the movement
+     * @param desc Description of the movement, Deposit or Payment
+     * @param type Type of movement, just to make the life easier
+     */
+    public void realizarMovimiento(Cuenta acco, double ammount, String desc , int type) {
+        long lastId = 0;
+        //Connection with the DB
+        this.openConnection();
+        try{
+            if(type == 1){//Deposit
+                double finalRes = acco.getBalance() + ammount;
+                
+                //Updates the account's balance
+                stat = con.prepareStatement(updateBalance);
+                stat.setDouble(1, finalRes);
+                stat.setLong(2, acco.getIdCuenta());
+                stat.executeUpdate();
+                
+                //Gets the last id of movement
+                stat = con.prepareStatement(getFinalMovementID);
+                ResultSet rs = stat.executeQuery();
+                while (rs.next()) {
+                    lastId = rs.getLong(1);
+                }
+                rs.close();
+                
+                //Creates a row in movement
+                stat = con.prepareStatement(setMovement);
+                stat.setLong(1, (lastId+1));
+                stat.setDouble(2, ammount);
+                stat.setDouble(3, finalRes);
+                stat.setString(4, desc);
+                Timestamp time = new Timestamp(System.currentTimeMillis());
+                stat.setTimestamp(5, time);
+                stat.setLong(6, acco.getIdCuenta());
+                stat.executeUpdate();
+      
+            }else{//Payment
+                if(acco.getBalance()>=ammount){ //If the balance is enought
+                    double finalRes = acco.getBalance() - ammount;
+                    
+                    //Updates the account's balance
+                    stat = con.prepareStatement(updateBalance);
+                    stat.setDouble(1, finalRes);
+                    stat.setLong(2, acco.getIdCuenta());
+                    stat.executeUpdate();
+
+                    //Gets the last id of movement
+                    stat = con.prepareStatement(getFinalMovementID);
+                    ResultSet rs = stat.executeQuery();
+                    while (rs.next()) {
+                        lastId = rs.getLong(1);
+                    }
+                    rs.close();
+                    
+                    //Creates a row in movement
+                    stat = con.prepareStatement(setMovement);
+                    stat.setLong(1, (lastId+1));
+                    stat.setDouble(2, ammount);
+                    stat.setDouble(3, finalRes);
+                    stat.setString(4, desc);
+                    Timestamp time = new Timestamp(System.currentTimeMillis());
+                    stat.setTimestamp(5, time);
+                    stat.setLong(6, acco.getIdCuenta());
+                    stat.executeUpdate();
+                }else //Error, not enought money in the acount
+                    System.out.println("Not enought balance.");
+            }
+        }catch(SQLException e){
+            //Temporal error print
+            System.out.println("Error with the SQL or the DB - " +
+                    e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        //
+        this.closeConnection();
     }
 
     /**
