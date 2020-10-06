@@ -73,14 +73,14 @@ public class Application {
 
         System.out.println("B A N C O");
         System.out.println("**********************************************************");
-        System.out.println("1. Crear cliente."); // Hecho
-        System.out.println("2. Consultar datos de un cliente."); // Hecho
-        System.out.println("3. Consultar cuentas de un cliente."); // Hecho
-        System.out.println("4. Crear cuenta para cliente."); // Hecho
-        System.out.println("5. Agregar cliente a cuenta."); // Hecho
-        System.out.println("6. Consultar datos de una cuenta."); // Hecho
-        System.out.println("7. Realizar movimiento sobre una cuenta."); // Acabar
-        System.out.println("8. Consultar movimientos de una cuenta."); // Hecho
+        System.out.println("1. Crear cliente.");
+        System.out.println("2. Consultar datos de un cliente.");
+        System.out.println("3. Consultar cuentas de un cliente.");
+        System.out.println("4. Crear cuenta para cliente.");
+        System.out.println("5. Agregar cliente a cuenta.");
+        System.out.println("6. Consultar datos de una cuenta.");
+        System.out.println("7. Realizar movimiento sobre una cuenta.");
+        System.out.println("8. Consultar movimientos de una cuenta.");
         System.out.println("9. S A L I R ");
         System.out.println("**********************************************************");
         System.out.println("Introduce opción: ");
