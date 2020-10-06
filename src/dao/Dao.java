@@ -42,8 +42,9 @@ public class Dao {
     private final String getAccount = "SELECT * FROM account WHERE id = ? ";       
     private final String setCustomerAccount = "INSERT INTO customer_account VALUES (?,?)";  
     private final String getMovement = "SELECT * FROM movement m, account a WHERE m.account_id LIKE a.id AND a.id LIKE ?";
+    private final String getFinalMovementID = "SELECT MAX(id) from movement";
     private final String updateBalance ="update account set balance = ? where id = ?";
-    private final String setMovement = "insert into movement values (?, ?, ?, ?, ?)";
+    private final String setMovement = "insert into movement values (?, ?, ?, ?, ?, ?)";
     private final String getFinalAccountID = "SELECT MAX(id) from account";
     
     /**
@@ -244,6 +245,7 @@ public class Dao {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 c = new Cuenta();
+                c.setIdCuenta(rs.getLong("id"));
                 c.setBalance(rs.getDouble("balance"));
                 c.setBalanceInicial(rs.getDouble("beginBalance"));
                 c.setBalanceInicialFecha(rs.getTimestamp("beginBalanceTimestamp"));
@@ -330,6 +332,7 @@ public class Dao {
      * @param type Type of movement, just to make the life easier
      */
     public void realizarMovimiento(Cuenta acco, double ammount, String desc , int type) {
+        long lastId = 0;
         //Connection with the DB
         this.openConnection();
         try{
@@ -342,14 +345,23 @@ public class Dao {
                 stat.setLong(2, acco.getIdCuenta());
                 stat.executeUpdate();
                 
+                //Gets the last id of movement
+                stat = con.prepareStatement(getFinalMovementID);
+                ResultSet rs = stat.executeQuery();
+                while (rs.next()) {
+                    lastId = rs.getLong(1);
+                }
+                rs.close();
+                
                 //Creates a row in movement
                 stat = con.prepareStatement(setMovement);
-                stat.setDouble(1, ammount);
-                stat.setDouble(2, finalRes);
-                stat.setString(3, desc);
+                stat.setLong(1, (lastId+1));
+                stat.setDouble(2, ammount);
+                stat.setDouble(3, finalRes);
+                stat.setString(4, desc);
                 Timestamp time = new Timestamp(System.currentTimeMillis());
-                stat.setTimestamp(4, time);
-                stat.setLong(5, acco.getIdCuenta());
+                stat.setTimestamp(5, time);
+                stat.setLong(6, acco.getIdCuenta());
                 stat.executeUpdate();
       
             }else{//Payment
@@ -361,15 +373,24 @@ public class Dao {
                     stat.setDouble(1, finalRes);
                     stat.setLong(2, acco.getIdCuenta());
                     stat.executeUpdate();
+
+                    //Gets the last id of movement
+                    stat = con.prepareStatement(getFinalMovementID);
+                    ResultSet rs = stat.executeQuery();
+                    while (rs.next()) {
+                        lastId = rs.getLong(1);
+                    }
+                    rs.close();
                     
                     //Creates a row in movement
                     stat = con.prepareStatement(setMovement);
-                    stat.setDouble(1, ammount);
-                    stat.setDouble(2, finalRes);
-                    stat.setString(3, desc);
+                    stat.setLong(1, (lastId+1));
+                    stat.setDouble(2, ammount);
+                    stat.setDouble(3, finalRes);
+                    stat.setString(4, desc);
                     Timestamp time = new Timestamp(System.currentTimeMillis());
-                    stat.setTimestamp(4, time);
-                    stat.setLong(5, acco.getIdCuenta());
+                    stat.setTimestamp(5, time);
+                    stat.setLong(6, acco.getIdCuenta());
                     stat.executeUpdate();
                 }else //Error, not enought money in the acount
                     System.out.println("Not enought balance.");
