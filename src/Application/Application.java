@@ -62,8 +62,10 @@ public class Application {
             }
         } while (m != 9);
     }
+
     /**
      * Muestra el menu
+     *
      * @return devuelve entero con la opcion seleccionada
      */
     public static int obtenerOpcMenu() {
@@ -74,7 +76,7 @@ public class Application {
         System.out.println("1. Crear cliente."); // Hecho
         System.out.println("2. Consultar datos de un cliente."); // Hecho
         System.out.println("3. Consultar cuentas de un cliente."); // Hecho
-        System.out.println("4. Crear cuenta para cliente."); // Acabar
+        System.out.println("4. Crear cuenta para cliente."); // Hecho
         System.out.println("5. Agregar cliente a cuenta."); // Hecho
         System.out.println("6. Consultar datos de una cuenta."); // Hecho
         System.out.println("7. Realizar movimiento sobre una cuenta."); // Acabar
@@ -85,6 +87,7 @@ public class Application {
         opc = Utilidades.leerInt(1, 9);
         return opc;
     }
+
     /**
      * Crea un nuevo cliente
      */
@@ -93,6 +96,7 @@ public class Application {
         c.setDatosCliente();
         dao.setCustomer(c);
     }
+
     /**
      * Consulta datos de un cliente
      */
@@ -101,6 +105,7 @@ public class Application {
         String n = Utilidades.introducirCadena();
         dao.getCustomers(n);
     }
+
     /**
      * Consulta cuenta/s de un cliente
      */
@@ -111,14 +116,16 @@ public class Application {
         String ape = Utilidades.introducirCadena();
         dao.getCuentaCliente(nom, ape);
     }
+
     /**
      * Crea cuenta/cliente para cliente
      */
     private static void crearCuentaCliente() {
         System.out.println("Introduce ID cliente para crear la cuenta:");
         long id = Utilidades.leerLong();
-        dao.comprobarCliente(id); 
+        dao.comprobarCliente(id);
     }
+
     /**
      * Agrega cliente a cuenta
      */
@@ -129,22 +136,23 @@ public class Application {
         long idCu = Utilidades.leerLong();
         dao.agregarCuentaCliente(idCli, idCu);
     }
+
     /**
      * Consulta datos de una cuenta
      */
     private static void consultarDatosCuenta() {
-
         System.out.println("Introuce ID de cuenta a consultar:");
         long a = Utilidades.leerInt();
         dao.getAccount(a);
-
     }
+
     /**
      * Realiza un movimiento
      */
     private static void realizarMovimiento() {
-
+         
     }
+
     /**
      * Consulta movimientos de una cuenta
      */
