@@ -135,7 +135,7 @@ public class Application {
     private static void consultarDatosCuenta() {
 
         System.out.println("Introuce ID de cuenta a consultar:");
-        long a = Utilidades.leerInt();
+        long a = Utilidades.leerLong();
         dao.getAccount(a);
 
     }
